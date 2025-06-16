@@ -41,7 +41,7 @@ except Exception as e:
                   }
               }
           })
-async def get_detected_json(file: UploadFile = File(..., description="Изображение, на котором нужно найти объекты")):
+async def get_detected_json(file: UploadFile = File(..., description="jpg изображение, на котором нужно найти объекты")):
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Файл должен быть изображением.")
 
@@ -85,7 +85,7 @@ async def get_detected_json(file: UploadFile = File(..., description="Изобр
                   }
               }
           })
-async def get_detected_image(file: UploadFile = File(...)):
+async def get_detected_image(file: UploadFile = File(..., description="jpg изображение, на котором нужно найти объекты")):
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Файл должен быть изображением.")
 
@@ -116,7 +116,7 @@ async def get_detected_image(file: UploadFile = File(...)):
     return StreamingResponse(
         content=io.BytesIO(image_bytes),
         media_type="image/jpeg",
-        headers={"X-Detections": str(detections)}
+        headers={"detections": str(detections)}
     )
 
 @app.post("/get_detected_base64",
@@ -136,7 +136,7 @@ async def get_detected_image(file: UploadFile = File(...)):
                   }
               }
           })
-async def get_detected_full(file: UploadFile = File(...)):
+async def get_detected_full(file: UploadFile = File(..., description="jpg изображение, на котором нужно найти объекты")):
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Файл должен быть изображением.")
 
