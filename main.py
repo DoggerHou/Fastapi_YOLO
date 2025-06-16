@@ -75,5 +75,5 @@ async def get_detected_image(file: UploadFile = File(...)):
     return StreamingResponse(
         content=io.BytesIO(image_bytes),
         media_type="image/jpeg",
-        headers={"X-Detections": str(detections)}  # можно доставать отдельно в клиенте
+        headers={"detections": str(detections)}  # можно доставать отдельно в клиенте
     )
