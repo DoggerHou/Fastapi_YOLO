@@ -168,7 +168,25 @@ async def get_detected_full(file: UploadFile = File(..., description="jpg изо
     return {"detections": detections, "image_base64": img_base64}
 
 
-@app.post("/get_detected_video")
+@app.post("/get_detected_video",
+          summary="Обработка видео с покадровым распознаванием объектов",
+        description="""
+        Принимает видеофайл, обрабатывает его покадрово с помощью модели YOLO и возвращает результат в формате `.mp4`.
+        
+        - Используется прямой доступ к кадрам через OpenCV.
+        - Распознавание выполняется на каждом N-ом кадре, где N определяется на основе FPS.
+        - На каждый кадр накладываются прямоугольники и значения вероятностей для распознанных объектов.
+        - Все временные файлы удаляются после обработки.
+        
+        Поддерживаются видеофайлы формата `mp4`.
+        """,
+            response_class=StreamingResponse,
+            responses={
+                200: {"content": {"video/mp4": {}}},
+                400: {"description": "Некорректный тип файла или не удалось открыть видео"},
+                500: {"description": "Внутренняя ошибка сервера"},
+            },
+)
 async def get_detected_video(file: UploadFile = File(...)):
     if not file.content_type.startswith("video/"):
         raise HTTPException(status_code=400, detail="Файл должен быть видео.")
@@ -240,8 +258,25 @@ async def get_detected_video(file: UploadFile = File(...)):
 
 from fastapi.responses import FileResponse
 
-@app.post("/get_detected_video_cleaned")
-async def get_detected_video_cleaned(file: UploadFile = File(...), background_tasks: BackgroundTasks = None):
+@app.post("/get_detected_video_yolo",
+          summary="Обработка видео через встроенный метод YOLO",
+          description="""
+          Загружает видеофайл и обрабатывает его с помощью встроенного метода `YOLO.predict()`. Результат сохраняется автоматически и возвращается в формате `.avi`.
+
+          - Используется встроенный механизм записи результата модели YOLO.
+          - После обработки временные файлы и директории удаляются.
+          - Возвращается первый найденный `.avi`-файл из последней директории `runs/detect/predict*`.
+
+          Поддерживаются видеофайлы формата `mp4`. Возвращаемый результат — `.avi`.
+          """,
+          response_class=FileResponse,
+          responses={
+              200: {"content": {"video/x-msvideo": {}}},
+              400: {"description": "Некорректный тип файла или не удалось открыть видео"},
+              500: {"description": "Результирующий файл не найден"},
+          },
+)
+async def get_detected_video_yolo(file: UploadFile = File(...), background_tasks: BackgroundTasks = None):
     if not file.content_type.startswith("video/"):
         raise HTTPException(status_code=400, detail="Файл должен быть видео.")
 
@@ -280,10 +315,6 @@ async def get_detected_video_cleaned(file: UploadFile = File(...), background_ta
         background_tasks.add_task(cleanup)
 
     return FileResponse(avi_path, media_type="video/x-msvideo", filename="detected.avi")
-
-
-
-
 
 
 @app.get("/health", summary="Проверка состояния сервера", response_description="Статус сервера")
