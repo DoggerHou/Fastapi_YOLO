@@ -285,7 +285,7 @@ async def get_detected_video_yolo(file: UploadFile = File(...), background_tasks
         f.write(await file.read())
 
     start = time.time()
-    model.predict(source=temp_input_path, save=True)
+    model.predict(source=temp_input_path, save=True, conf=0.5)
     end = time.time()
     print(f"Время распознавания видео: {end - start:.3f} секунд")
 
