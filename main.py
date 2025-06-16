@@ -164,3 +164,8 @@ async def get_detected_full(file: UploadFile = File(..., description="jpg изо
 
     return {"detections": detections, "image_base64": img_base64}
 
+
+@app.get("/health", summary="Проверка состояния сервера", response_description="Статус сервера")
+async def health_check():
+    return {"status": "ok", "message": "Server is up"}
+
