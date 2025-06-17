@@ -1,5 +1,5 @@
 # Базовый образ с поддержкой CUDA и PyTorch
-FROM pytorch/pytorch:2.2.2-cuda12.1-cudnn8-runtime
+FROM pytorch/pytorch:2.7.0-cuda12.6-cudnn9-runtime
 
 # Установка системных библиотек для OpenCV и видео
 RUN apt-get update && apt-get install -y \
