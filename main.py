@@ -45,8 +45,11 @@ except Exception as e:
               }
           })
 async def get_detected_json(file: UploadFile = File(..., description="jpg изображение, на котором нужно найти объекты")):
+    if file is None:
+        raise HTTPException(status_code=400, detail="Файл не загружен")
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Файл должен быть изображением.")
+
 
     try:
         contents = await file.read()
@@ -89,8 +92,11 @@ async def get_detected_json(file: UploadFile = File(..., description="jpg изо
               }
           })
 async def get_detected_image(file: UploadFile = File(..., description="jpg изображение, на котором нужно найти объекты")):
+    if file is None:
+        raise HTTPException(status_code=400, detail="Файл не загружен")
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Файл должен быть изображением.")
+
 
     try:
         contents = await file.read()
@@ -140,8 +146,11 @@ async def get_detected_image(file: UploadFile = File(..., description="jpg из�
               }
           })
 async def get_detected_full(file: UploadFile = File(..., description="jpg изображение, на котором нужно найти объекты")):
+    if file is None:
+        raise HTTPException(status_code=400, detail="Файл не загружен")
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Файл должен быть изображением.")
+
 
     try:
         contents = await file.read()
@@ -188,6 +197,8 @@ async def get_detected_full(file: UploadFile = File(..., description="jpg изо
             },
 )
 async def get_detected_video(file: UploadFile = File(...)):
+    if file is None:
+        raise HTTPException(status_code=400, detail="Файл не загружен")
     if not file.content_type.startswith("video/"):
         raise HTTPException(status_code=400, detail="Файл должен быть видео.")
 
