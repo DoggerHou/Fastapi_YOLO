@@ -28,7 +28,7 @@ try:
 except Exception as e:
     raise RuntimeError(f"Ошибка загрузки модели: {e}")
 
-@app.post("/get_detected_json",
+@app.post("/get_detected_boxes",
           summary="Получить координаты объектов",
           response_description="JSON с координатами",
           responses={
@@ -44,7 +44,7 @@ except Exception as e:
                   }
               }
           })
-async def get_detected_json(file: UploadFile = File(..., description="jpg изображение, на котором нужно найти объекты")):
+async def get_detected_boxes(file: UploadFile = File(..., description="jpg изображение, на котором нужно найти объекты")):
     if file.content_type is None:
         raise HTTPException(status_code=400, detail="Файл не загружен")
     if not file.content_type.startswith("image/"):
@@ -70,6 +70,7 @@ async def get_detected_json(file: UploadFile = File(..., description="jpg изо
         return JSONResponse(content={"message": "Объекты не найдены", "detections": []})
 
     return JSONResponse(content={"detections": detections})
+
 
 @app.post("/get_detected_image",
           summary="Получить изображение с отмеченными объектами",
@@ -145,7 +146,7 @@ async def get_detected_image(file: UploadFile = File(..., description="jpg из�
                   }
               }
           })
-async def get_detected_full(file: UploadFile = File(..., description="jpg изображение, на котором нужно найти объекты")):
+async def get_detected_base64(file: UploadFile = File(..., description="jpg изображение, на котором нужно найти объекты")):
     if file.content_type is None:
         raise HTTPException(status_code=400, detail="Файл не загружен")
     if not file.content_type.startswith("image/"):
@@ -183,7 +184,7 @@ async def get_detected_full(file: UploadFile = File(..., description="jpg изо
         Принимает видеофайл, обрабатывает его покадрово с помощью модели YOLO и возвращает результат в формате `.mp4`.
         
         - Используется прямой доступ к кадрам через OpenCV.
-        - Распознавание выполняется на каждом N-ом кадре, где N определяется на основе FPS.
+        - Распознавание выполняется с частотой 30 кадров в секунду в случае, если исходный FPS выше.
         - На каждый кадр накладываются прямоугольники и значения вероятностей для распознанных объектов.
         - Все временные файлы удаляются после обработки.
         
@@ -215,8 +216,7 @@ async def get_detected_video(file: UploadFile = File(...)):
 
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     input_fps = cap.get(cv2.CAP_PROP_FPS)
-    if input_fps <= 0:
-        input_fps = 25.0
+
 
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -273,6 +273,7 @@ async def get_detected_video(file: UploadFile = File(...)):
           Загружает видеофайл и обрабатывает его с помощью встроенного метода `YOLO.predict()`. Результат сохраняется автоматически и возвращается в формате `.avi`.
 
           - Используется встроенный механизм записи результата модели YOLO.
+          - Видео обрабатывается с исходным количеством кадров в секунду
           - После обработки временные файлы и директории удаляются.
           - Возвращается первый найденный `.avi`-файл из последней директории `runs/detect/predict*`.
 
