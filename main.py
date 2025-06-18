@@ -1,5 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
 from fastapi.openapi.models import Example
 from fastapi.responses import Response
 from PIL import Image, UnidentifiedImageError
@@ -45,7 +45,7 @@ except Exception as e:
               }
           })
 async def get_detected_json(file: UploadFile = File(..., description="jpg изображение, на котором нужно найти объекты")):
-    if file is None:
+    if file.content_type is None:
         raise HTTPException(status_code=400, detail="Файл не загружен")
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Файл должен быть изображением.")
@@ -92,7 +92,7 @@ async def get_detected_json(file: UploadFile = File(..., description="jpg изо
               }
           })
 async def get_detected_image(file: UploadFile = File(..., description="jpg изображение, на котором нужно найти объекты")):
-    if file is None:
+    if file.content_type is None:
         raise HTTPException(status_code=400, detail="Файл не загружен")
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Файл должен быть изображением.")
@@ -146,7 +146,7 @@ async def get_detected_image(file: UploadFile = File(..., description="jpg из�
               }
           })
 async def get_detected_full(file: UploadFile = File(..., description="jpg изображение, на котором нужно найти объекты")):
-    if file is None:
+    if file.content_type is None:
         raise HTTPException(status_code=400, detail="Файл не загружен")
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Файл должен быть изображением.")
@@ -197,7 +197,7 @@ async def get_detected_full(file: UploadFile = File(..., description="jpg изо
             },
 )
 async def get_detected_video(file: UploadFile = File(...)):
-    if file is None:
+    if file.content_type is None:
         raise HTTPException(status_code=400, detail="Файл не загружен")
     if not file.content_type.startswith("video/"):
         raise HTTPException(status_code=400, detail="Файл должен быть видео.")
@@ -267,8 +267,6 @@ async def get_detected_video(file: UploadFile = File(...)):
     return StreamingResponse(io.BytesIO(video_bytes), media_type="video/mp4")
 
 
-from fastapi.responses import FileResponse
-
 @app.post("/get_detected_video_yolo",
           summary="Обработка видео через встроенный метод YOLO",
           description="""
@@ -288,6 +286,8 @@ from fastapi.responses import FileResponse
           },
 )
 async def get_detected_video_yolo(file: UploadFile = File(...), background_tasks: BackgroundTasks = None):
+    if file.content_type is None:
+        raise HTTPException(status_code=400, detail="Файл не загружен")
     if not file.content_type.startswith("video/"):
         raise HTTPException(status_code=400, detail="Файл должен быть видео.")
 
