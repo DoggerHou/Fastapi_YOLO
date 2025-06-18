@@ -1,20 +1,20 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
-from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
-from fastapi.openapi.models import Example
-from fastapi.responses import Response
-from PIL import Image, UnidentifiedImageError
-import io
-from ultralytics import YOLO
-import cv2
-import numpy as np
-import base64
-import asyncio
 from config import MODEL_PATH
 
+from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
+from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
+from PIL import Image, UnidentifiedImageError
+from ultralytics import YOLO
+import numpy as np
+
+import io
+import cv2
+import base64
+import asyncio
 import glob
 import os
 import shutil
 import time
+
 
 app = FastAPI()
 
@@ -27,6 +27,7 @@ try:
     model = YOLO(MODEL_PATH)
 except Exception as e:
     raise RuntimeError(f"Ошибка загрузки модели: {e}")
+
 
 @app.post("/get_detected_boxes",
           summary="Получить координаты объектов",
