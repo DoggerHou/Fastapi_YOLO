@@ -201,7 +201,7 @@ docker compose up
 | POST  | `/get_detected_video_yolo` | `video/mp4` (форм-data) | `video/x-msvideo` (`.avi`)| Обработка видео через встроенный `YOLO.predict()`. |
 | GET   | `/health`               | —                         | JSON                      | Проверка доступности сервера. |
 | GET   | `/docs`                 | —                         | HTML                      | Swagger UI с полной документацией API. |
-
+```
 
 <img width="933" height="370" alt="image" src="https://github.com/user-attachments/assets/acfc9137-71f7-4640-bf7c-f54ee2028785" />
 
@@ -215,7 +215,7 @@ docker compose up
 
 ## Примеры использования
 
-### 1. Через Swagger UI (рекомендуется для «потыкав и посмотреть»)
+### 1. Через Swagger UI (рекомендуется)
 
 1. Запустить сервер (локально или в Docker).
 2. Открыть в браузере: `http://localhost:8000/docs`.
