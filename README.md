@@ -166,7 +166,6 @@
 
 ## Запуск в Docker с поддержкой GPU
 
-
 ```bash
 # Клонируем репозиторий
 git clone https://github.com/DoggerHou/Fastapi_YOLO.git
@@ -181,28 +180,47 @@ docker compose up
 После старта сервер доступен по адресу:
 ```http://localhost:8000```
 
+---
 
+## REST API
+
+Все рабочие методы (кроме служебных) принимают файлы через `multipart/form-data` с полем `file`.  
+Типично это либо изображение (`image/jpeg`, `image/png`), либо видео (`video/mp4`).
 
 ---
 
-## REST API в виде таблицы
+### POST `/get_detected_boxes`
 
-```markdown
-## REST API (обзор)
+Координаты — отдельно, картинка — отдельно.
 
-Поддерживаемые эндпоинты:
+- **Назначение:** принять изображение и вернуть список найденных людей в виде JSON.
+- **Вход:**
+  - `multipart/form-data`
+  - `file` — изображение (`image/*`)
+- **Выход (200):** JSON
 
-| Метод | Путь                    | Вход                      | Выход                     | Назначение |
-|------:|-------------------------|---------------------------|---------------------------|-----------|
-| POST  | `/get_detected_boxes`   | `image/jpeg` (форм-data)  | JSON                      | Вернуть только координаты найденных объектов. |
-| POST  | `/get_detected_image`   | `image/jpeg` (форм-data)  | `image/jpeg` + заголовок  | Вернуть размеченное изображение, координаты — в HTTP-заголовке. |
-| POST  | `/get_detected_base64`  | `image/jpeg` (форм-data)  | JSON                      | Координаты + изображение в base64. |
-| POST  | `/get_detected_video`   | `video/mp4` (форм-data)   | `video/mp4`               | Покадровая обработка видео через OpenCV. |
-| POST  | `/get_detected_video_yolo` | `video/mp4` (форм-data) | `video/x-msvideo` (`.avi`)| Обработка видео через встроенный `YOLO.predict()`. |
-| GET   | `/health`               | —                         | JSON                      | Проверка доступности сервера. |
-| GET   | `/docs`                 | —                         | HTML                      | Swagger UI с полной документацией API. |
+```json
+{
+  "detections": [
+    {
+      "x1": 123.0,
+      "y1": 456.0,
+      "x2": 789.0,
+      "y2": 999.0,
+      "confidence": 0.87
+    }
+  ]
+}
+```
+Если людей не нашли:
+```
+{
+  "message": "Объекты не найдены",
+  "detections": []
+}
 ```
 
+Web-документация Swagger, доступная по адресу `http://localhost:8000/docs`:  
 <img width="933" height="370" alt="image" src="https://github.com/user-attachments/assets/acfc9137-71f7-4640-bf7c-f54ee2028785" />
 
 Общий способ взаимодействия:
@@ -215,20 +233,13 @@ docker compose up
 
 ## Примеры использования
 
-### 1. Через Swagger UI (рекомендуется)
+### 1. Через Swagger UI (рекомендуется для ручного тестирования)
 
 1. Запустить сервер (локально или в Docker).
 2. Открыть в браузере: `http://localhost:8000/docs`.
 3. Выбрать интересующий эндпоинт, например `/get_detected_image`.
 4. Нажать **Try it out**, загрузить файл и нажать **Execute**.
 5. Результат (картинка / JSON / видео) можно скачать прямо из интерфейса.
-
-<!-- СЮДА: цепочка скринов Swagger (главный экран, выбор эндпоинта, пример ответа)
-![Swagger UI — главный экран](docs/img/swagger_main.png)
-![Пример запроса /get_detected_image](docs/img/swagger_get_detected_image.png)
--->
-
----
 
 ### 2. Пример: детекция на изображении (возврат JPEG)
 
