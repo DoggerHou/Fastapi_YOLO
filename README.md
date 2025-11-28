@@ -42,7 +42,6 @@
 - **Контейнеризация**: Docker (+ NVIDIA GPU)
 - **Документация API**: встроенный Swagger UI FastAPI  
 
-<img width="933" height="370" alt="image" src="https://github.com/user-attachments/assets/acfc9137-71f7-4640-bf7c-f54ee2028785" />
 
 ---
 
@@ -203,6 +202,9 @@ docker compose up
 | GET   | `/health`               | —                         | JSON                      | Проверка доступности сервера. |
 | GET   | `/docs`                 | —                         | HTML                      | Swagger UI с полной документацией API. |
 
+
+<img width="933" height="370" alt="image" src="https://github.com/user-attachments/assets/acfc9137-71f7-4640-bf7c-f54ee2028785" />
+
 Общий способ взаимодействия:
 
 - данные передаются через `multipart/form-data`, поле `file`;
@@ -211,9 +213,30 @@ docker compose up
   - `400` — неверный формат или отсутствие файла;
   - `500` — внутренняя ошибка сервера.
 
-<!-- СЮДА: скрин общей таблицы эндпоинтов из Swagger
-![Эндпоинты REST API](docs/img/swagger_endpoints.png)
+## Примеры использования
+
+### 1. Через Swagger UI (рекомендуется для «потыкав и посмотреть»)
+
+1. Запустить сервер (локально или в Docker).
+2. Открыть в браузере: `http://localhost:8000/docs`.
+3. Выбрать интересующий эндпоинт, например `/get_detected_image`.
+4. Нажать **Try it out**, загрузить файл и нажать **Execute**.
+5. Результат (картинка / JSON / видео) можно скачать прямо из интерфейса.
+
+<!-- СЮДА: цепочка скринов Swagger (главный экран, выбор эндпоинта, пример ответа)
+![Swagger UI — главный экран](docs/img/swagger_main.png)
+![Пример запроса /get_detected_image](docs/img/swagger_get_detected_image.png)
 -->
 
+---
+
+### 2. Пример: детекция на изображении (возврат JPEG)
+
+```bash
+curl -X POST "http://localhost:8000/get_detected_image" \
+  -H "accept: image/jpeg" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@path/to/image.jpg" \
+  --output detected.jpg
 
 
