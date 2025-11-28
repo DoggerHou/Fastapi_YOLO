@@ -168,7 +168,7 @@
 
 ```bash
 # Клонируем репозиторий
-git clone https://github.com/DoggerHou/Fastapi_YOLO.git
+git clone https://github.com/mal0znaal/Fastapi_YOLO.git
 cd Fastapi_YOLO
 
 # Сборка и запуск
