@@ -163,3 +163,57 @@
   - возможность установить зависимости из `requirements.txt`:
     - `ultralytics`, `opencv-python`, `pillow`, `numpy`, `python-multipart` и др.
 
+---
+
+## Запуск в Docker с поддержкой GPU
+
+
+```bash
+# Клонируем репозиторий
+git clone https://github.com/DoggerHou/Fastapi_YOLO.git
+cd Fastapi_YOLO
+
+# Сборка и запуск
+docker compose up --build
+
+# либо, если образ уже собран
+docker compose up
+```
+После старта сервер доступен по адресу:
+```http://localhost:8000```
+
+
+
+---
+
+## REST API в виде таблицы
+
+```markdown
+## REST API (обзор)
+
+Поддерживаемые эндпоинты:
+
+| Метод | Путь                    | Вход                      | Выход                     | Назначение |
+|------:|-------------------------|---------------------------|---------------------------|-----------|
+| POST  | `/get_detected_boxes`   | `image/jpeg` (форм-data)  | JSON                      | Вернуть только координаты найденных объектов. |
+| POST  | `/get_detected_image`   | `image/jpeg` (форм-data)  | `image/jpeg` + заголовок  | Вернуть размеченное изображение, координаты — в HTTP-заголовке. |
+| POST  | `/get_detected_base64`  | `image/jpeg` (форм-data)  | JSON                      | Координаты + изображение в base64. |
+| POST  | `/get_detected_video`   | `video/mp4` (форм-data)   | `video/mp4`               | Покадровая обработка видео через OpenCV. |
+| POST  | `/get_detected_video_yolo` | `video/mp4` (форм-data) | `video/x-msvideo` (`.avi`)| Обработка видео через встроенный `YOLO.predict()`. |
+| GET   | `/health`               | —                         | JSON                      | Проверка доступности сервера. |
+| GET   | `/docs`                 | —                         | HTML                      | Swagger UI с полной документацией API. |
+
+Общий способ взаимодействия:
+
+- данные передаются через `multipart/form-data`, поле `file`;
+- сервис возвращает стандартные HTTP-коды:
+  - `200` — успешная обработка;
+  - `400` — неверный формат или отсутствие файла;
+  - `500` — внутренняя ошибка сервера.
+
+<!-- СЮДА: скрин общей таблицы эндпоинтов из Swagger
+![Эндпоинты REST API](docs/img/swagger_endpoints.png)
+-->
+
+
+
