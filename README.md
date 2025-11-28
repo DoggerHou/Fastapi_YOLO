@@ -74,8 +74,8 @@
 ### Используемая модель
 
 - Семейство: YOLO11 (Ultralytics)
-- Вариант: легковесная модель (аналог `YOLO11s`) с входным разрешением по ширине 1280 пикселей.
-- Веса модели: `yolov_model/best.pt` (экспорт по результатам экспериментов из ноутбука `project.ipynb`).
+- Вариант: `YOLO11s` с входным разрешением по ширине 1280 пикселей.
+- Веса модели: `yolov_model/best.pt`
 - Задача: детекция людей на снимках с БПЛА (одноклассовый детектор).
 
 ### Наборы данных
@@ -247,5 +247,4 @@ curl -X POST "http://localhost:8000/get_detected_image" \
   -H "Content-Type: multipart/form-data" \
   -F "file=@path/to/image.jpg" \
   --output detected.jpg
-
-
+```
